@@ -19,11 +19,17 @@ router.get("/listings", wrapAsync(async (req, res) => {
  res.json({allListings});
 }))
 
-router.get("/listings/new", (req, res) => {
+router.get("new", (req, res) => {
+
+ if(!req.isAuthenticated()) {
+
+  return req.flash("error", "you must be logged in to create listing!")
+
+ }
  res.json("Form rendered")
 });
 
-router.get("/listings/:id", wrapAsync(async(req, res) => {
+router.get(":id", wrapAsync(async(req, res) => {
 
  let {id} = req.params;
 
@@ -39,11 +45,11 @@ router.get("/listings/:id", wrapAsync(async(req, res) => {
 
 }));
 
-router.post("/listings", validateListing, wrapAsync(async (req, res) => {
+router.post("/", validateListing, wrapAsync(async (req, res) => {
 
  const  newListing = new Listing(req.body.listing);
 
- await newListing.save;
+ await newListing.save();
 
  req.flash("success", "new Listing saved" )
 
@@ -52,7 +58,7 @@ router.post("/listings", validateListing, wrapAsync(async (req, res) => {
 }));
 
 
-router.get("/listings/:id/edit",  wrapAsync(async (req, res) => {
+router.get(":id/edit",  wrapAsync(async (req, res) => {
 
  const {id} = req.params
 
@@ -62,7 +68,7 @@ router.get("/listings/:id/edit",  wrapAsync(async (req, res) => {
 
 }));
 
-router.put("/listings/:id", wrapAsync(async () => {
+router.put(":id", wrapAsync(async () => {
 
  let {id} = req.params;
 

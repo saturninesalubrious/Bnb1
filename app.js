@@ -17,6 +17,12 @@ import flash from 'connect-flash';
 
 import passport from 'passport';
 
+import Localstrategy from 'passport-local'
+
+import User from './models/user.js'
+
+import user from './routes/user.js'
+
 
 const app = express();
 
@@ -47,6 +53,13 @@ const sessionOptions = {
 
 app.use(session(sessionOptions));
 app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new Localstrategy(User.authenticate()));
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 
 app.use((req, res, next) => {
  res.locals.success = req.flash("success")
@@ -62,7 +75,8 @@ app.listen(8000, () => {
 });
 
 app.use("/listings", listings );
-app.use("/listings/:id/reviews", reviews)
+app.use("/listings/:id/reviews", reviews);
+app.use('/user', user);
 
 
 app.all("*", (req, res, next) => {
